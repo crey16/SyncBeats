@@ -1,0 +1,46 @@
+/* Hide Metronome Screen Initially */
+
+#metronomeScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+
+/* Show Metronome When Active */
+#metronomeScreen.active {
+    display: flex;
+}
+
+/* Beat Visualizer */
+#beatVisualizer {
+    width: 100px;
+    height: 100px;
+    background: #ff0266;
+    border-radius: 50%;
+    margin: 20px;
+    transition: transform 0.1s ease-in-out;
+}
+
+/* Beat Animation */
+.beat {
+    transform: scale(1.3);
+}
+
+/* Controls */
+label {
+    display: block;
+    margin: 10px 0;
+}
+
+/* Buttons */
+#startMetronome, #stopMetronome, #leaveRoom {
+    background: #03dac6;
+    color: black;
+}
+
+#startMetronome:hover, #stopMetronome:hover, #leaveRoom:hover {
+    background: #018786;
+}

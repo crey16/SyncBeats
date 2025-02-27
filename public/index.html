@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Beats</title>
+    <link rel="stylesheet" href="css/lobby.css">
+    <link rel="stylesheet" href="css/metronome.css">
+</head>
+<body>
+
+    <h1>SyncBeats</h1>
+
+    <!-- 🔹 Lobby Screen (Before Joining a Room) -->
+    <div id="lobby">
+        <h2>Available Rooms</h2>
+        <ul id="roomList"></ul>
+
+        <button id="createRoom">Create Room</button>
+        <input type="text" id="roomIdInput" placeholder="Enter Room ID">
+        <button id="joinRoom">Join Room</button>
+    </div>
+
+    <!-- 🔹 Metronome Screen (Hidden Until Joining a Room) -->
+    <div id="metronomeScreen" class="hidden">
+        <h2>Room: <span id="roomKey"></span></h2>
+
+        <!-- Beat Visualizer -->
+        <div id="beatVisualizer"></div>
+
+        <!-- Controls -->
+        <label>BPM: <input type="number" id="bpmInput" value="90"></label>
+        <label>Time Signature: 
+            <select id="timeSignature">
+                <option>4/4</option>
+                <option>3/4</option>
+                <option>6/8</option>
+            </select>
+        </label>
+
+        <button id="startMetronome">▶ Play</button>
+        <button id="stopMetronome">⏹ Stop</button>
+        <button id="leaveRoom">🚪 Leave Room</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>
