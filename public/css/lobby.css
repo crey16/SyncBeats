@@ -1,14 +1,13 @@
-/* General Styles */
-body {
+/* Prevent scrolling between sections */
+html, body {
+    overflow: hidden; /* Prevent scrolling down to metronome screen */
+    height: 100%;
+    background-color: #121212; /* Dark Background */
+    color: white; /* Text Color */
     font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #121212;
-    color: white;
-    margin: 0;
-    padding: 0;
 }
 
-/* Center Lobby UI */
+/* Ensure full height for lobby screen */
 #lobby {
     display: flex;
     flex-direction: column;
@@ -17,10 +16,19 @@ body {
     height: 100vh;
 }
 
-#metronomeScreen {
-    display: none; /* Hide metronome screen */
+h1 {
+    text-align: center;
+    width: 100%;
 }
 
+/* Ensure metronome screen remains hidden until needed */
+#metronomeScreen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
 
 /* Room List Styling */
 #roomList {

@@ -10,12 +10,13 @@ const rooms = {}; // Stores room data
 
 // Serve Static Files
 const path = require("path");
-
-// Serve Static Files Correctly
 app.use(express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
-    console.log("New client connected");
+    console.log("New client connected:", socket.id);
+
+    // Send active rooms when a user connects
+    socket.emit("activeRooms", Object.keys(rooms));
 
     // 🎵 Create Room
     socket.on("createRoom", () => {
@@ -35,70 +36,55 @@ io.on("connection", (socket) => {
     socket.on("joinRoom", (roomId) => {
         if (rooms[roomId]) {
             socket.join(roomId);
-            socket.emit("roomJoined", rooms[roomId]);
+            socket.emit("roomJoined", { roomId });
+            io.to(roomId).emit("userJoined", { roomId, userId: socket.id });
+            updateActiveRooms();
         } else {
             socket.emit("roomNotFound");
         }
     });
 
-    // 🎵 Update BPM & Time Signature (Only Room Host)
-    socket.on("updateSettings", ({ roomId, bpm }) => {
-        if (rooms[roomId] && rooms[roomId].host === socket.id) {
-            rooms[roomId].bpm = bpm;
-            io.to(roomId).emit("settingsUpdated", { bpm });
-        }
+    // 🎵 Leave Room (For Hosts & Guests)
+    socket.on("leaveRoom", ({ roomId }) => {
+        handleLeaveRoom(socket, roomId);
     });
 
-    // 🎵 Start Metronome (Syncs Across All Devices)
-    socket.on("metronomeStarted", ({ roomId }) => {
-        if (rooms[roomId]) {
-            rooms[roomId].isPlaying = true;
-            io.to(roomId).emit("metronomeStarted");
-        }
+    // 🔹 Handle Disconnections
+    socket.on("disconnect", () => {
+        console.log(`❌ Client disconnected: ${socket.id}`);
+        Object.keys(rooms).forEach((roomId) => {
+            if (io.sockets.adapter.rooms.get(roomId) && io.sockets.adapter.rooms.get(roomId).has(socket.id)) {
+                handleLeaveRoom(socket, roomId);
+            }
+        });
+        updateActiveRooms();
     });
 
-    // 🎵 Stop Metronome (Syncs Across All Devices)
-    socket.on("metronomeStopped", ({ roomId }) => {
-        if (rooms[roomId]) {
-            rooms[roomId].isPlaying = false;
-            io.to(roomId).emit("metronomeStopped");
+    function handleLeaveRoom(socket, roomId) {
+        if (!roomId || !rooms[roomId]) {
+            console.error(`❌ ERROR: Room ${roomId} not found.`);
+            return;
         }
-    });
 
-// 🎵 Leave Room (User Leaves WebSocket Room)
-socket.on("leaveRoom", ({ roomId }) => {
-    if (!roomId || !rooms[roomId]) {
-        console.error(`❌ ERROR: Room ${roomId} not found.`);
-        return;
-    }
+        console.log(`🚪 User ${socket.id} left room: ${roomId}`);
+        socket.leave(roomId);
+        io.to(roomId).emit("userLeft", { roomId, userId: socket.id });
 
-    console.log(`🚪 User left room: ${roomId}`);
-
-    // Remove user from the WebSocket room
-    socket.leave(roomId);
-
-    // If the last person left, delete the room
-    if (io.sockets.adapter.rooms.get(roomId) === undefined) {
-        delete rooms[roomId];
-        console.log(`🗑️ Room ${roomId} deleted (no users left).`);
-    }
-
-    updateActiveRooms();
-});
-
-
-    // 🔹 Send Active Rooms to All Clients
-    function updateActiveRooms() {
-        io.emit("activeRooms", Object.keys(rooms));
-    }
-
-    // 🔹 Remove Empty Rooms
-    function removeEmptyRooms() {
-        for (const room in rooms) {
-            if (io.sockets.adapter.rooms.get(room) === undefined) {
-                delete rooms[room];
+        if (rooms[roomId].host === socket.id) {
+            const remainingUsers = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+            if (remainingUsers.length > 0) {
+                rooms[roomId].host = remainingUsers[0];
+                io.to(roomId).emit("newHost", { roomId, newHost: remainingUsers[0] });
+            } else {
+                delete rooms[roomId];
             }
         }
+
+        updateActiveRooms();
+    }
+
+    function updateActiveRooms() {
+        io.emit("activeRooms", Object.keys(rooms));
     }
 });
 
