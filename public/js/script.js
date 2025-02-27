@@ -25,13 +25,14 @@ const leaveRoomBtn = document.getElementById("leaveRoom");
 
 socket.on("connect", () => {
     console.log("Connected to WebSocket server!");
+    socket.emit("getActiveRooms"); // Fetch active rooms when the page loads
 });
 
 // 🎵 Create Room
 createRoomBtn.addEventListener("click", () => {
-    console.log("Create Room button clicked!"); // Debugging log
-    socket.emit("createRoom"); // Send request to server
+    socket.emit("createRoom");
 });
+
 // Handle Room Creation
 socket.on("roomCreated", (roomId) => {
     currentRoom = roomId;
@@ -49,18 +50,10 @@ joinRoomBtn.addEventListener("click", () => {
 
 // Handle Room Join
 socket.on("roomJoined", (data) => {
-    console.log("✅ Joined Room:", data.roomId);
-
-    // Update the current room ID
     currentRoom = data.roomId;
-
-    // Display room code
-    document.getElementById("roomKey").textContent = currentRoom;
-
-    // Switch to Metronome Screen
+    roomKeyDisplay.textContent = currentRoom;
     switchToMetronomeScreen();
 });
-
 
 // Handle Room Not Found
 socket.on("roomNotFound", () => {
@@ -144,41 +137,47 @@ socket.on("settingsUpdated", ({ bpm }) => {
     bpmInput.value = bpm;
 });
 
-// 🎵 Leave Room
+// 🎵 Leave Room (For Hosts & Guests)
 leaveRoomBtn.addEventListener("click", () => {
-    if (!currentRoom) {
-        console.error("❌ ERROR: No room to leave.");
-        return;
-    }
-
+    if (!currentRoom) return;
+    
     console.log("🚪 Leaving Room:", currentRoom);
-
-    // Notify the server
     socket.emit("leaveRoom", { roomId: currentRoom });
+    switchToLobby();
+});
 
-    // Reset local room state
+// 🎵 Handle User Leaving the Room (Guests & Hosts)
+socket.on("userLeft", ({ roomId, userId }) => {
+    console.log(`🔔 User ${userId} left room: ${roomId}`);
+
+    if (userId === socket.id) {
+        switchToLobby();
+    }
+});
+
+// 🎵 Handle Host Transfer
+socket.on("newHost", ({ roomId, newHost }) => {
+    if (newHost === socket.id) {
+        console.log("👑 You are now the host of room:", roomId);
+        alert("You are now the host!");
+    }
+});
+
+// 🔹 Function to Switch Back to Lobby
+function switchToLobby() {
+    console.log("🔙 Switching to Lobby...");
+
+    metronomeScreen.style.display = "none";
+    lobbyScreen.style.display = "flex";
+
+    // Reset UI
+    roomIdInput.value = "";
     currentRoom = null;
     isPlaying = false;
     stopMetronome();
 
-    // Switch UI back to Lobby
-    switchToLobby();
-});
-
-function switchToLobby() {
-    console.log("🔙 Switching to Lobby...");
-
-    let lobby = document.getElementById("lobby");
-    let metronomeScreen = document.getElementById("metronomeScreen");
-
-    if (!lobby || !metronomeScreen) {
-        console.error("❌ ERROR: Elements not found!");
-        return;
-    }
-
-    // Hide Metronome Screen and Show Lobby
-    metronomeScreen.classList.add("hidden");
-    lobby.classList.remove("hidden");
+    // Fetch active rooms again when leaving
+    socket.emit("getActiveRooms");
 
     console.log("✅ Successfully returned to the lobby.");
 }
@@ -186,40 +185,28 @@ function switchToLobby() {
 // 🔹 Switch Screens
 function switchToMetronomeScreen() {
     console.log("🔄 Switching to Metronome Screen...");
-
-    let lobby = document.getElementById("lobby");
-    let metronomeScreen = document.getElementById("metronomeScreen");
-
-    if (!lobby || !metronomeScreen) {
-        console.error("❌ ERROR: Elements not found! Check your HTML.");
-        return;
-    }
-
-    // Hide the lobby and show the metronome
-    lobby.style.display = "none";
+    lobbyScreen.style.display = "none";
     metronomeScreen.style.display = "flex";
-
-    console.log("✅ SUCCESS: Lobby hidden, metronome screen displayed.");
 }
 
-
-function switchToLobby() {
-    metronomeScreen.classList.remove("active");
-    lobbyScreen.classList.remove("hidden");
-    currentRoom = null;
-    isPlaying = false;
-    stopMetronome();
-}
+// 🎵 Fetch Available Rooms on Load
+socket.on("activeRooms", (rooms) => {
+    updateRoomList(rooms);
+});
 
 // 🎵 Update Room List Dynamically
-socket.on("activeRooms", (rooms) => {
+function updateRoomList(rooms) {
     roomList.innerHTML = "";
-    rooms.forEach(room => {
-        const li = document.createElement("li");
-        li.textContent = room;
-        li.addEventListener("click", () => {
-            roomIdInput.value = room;
+    if (rooms.length === 0) {
+        roomList.innerHTML = "<li>No active rooms</li>";
+    } else {
+        rooms.forEach(room => {
+            const li = document.createElement("li");
+            li.textContent = room;
+            li.addEventListener("click", () => {
+                roomIdInput.value = room;
+            });
+            roomList.appendChild(li);
         });
-        roomList.appendChild(li);
-    });
-});
+    }
+}
