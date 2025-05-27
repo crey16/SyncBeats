@@ -44,3 +44,34 @@ label {
 #startMetronome:hover, #stopMetronome:hover, #leaveRoom:hover {
     background: #018786;
 }
+
+#beatBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin: 24px 0 16px 0;
+}
+.beat-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #292929;
+    opacity: 0.5;
+    transition: background 0.2s, opacity 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.beat-dot.active {
+    background: #ff0266;
+    opacity: 1;
+    transform: scale(1.25);
+    box-shadow: 0 0 12px #ff0266aa;
+}
+.beat-dot.downbeat {
+    background: #4f8cff;
+    color: #fff;
+}

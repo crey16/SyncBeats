@@ -5,50 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Corrected CSS Paths -->
-    <link rel="stylesheet" href="/css/lobby.css">
-    <link rel="stylesheet" href="/css/metronome.css">
+    <link rel="stylesheet" href="css/lobby.css">
+    <link rel="stylesheet" href="css/metronome.css">
 
     <title>SyncBeats</title>
 </head>
 <body>
-
-    <h1>SyncBeats</h1>
-
-    <!-- 🔹 Lobby Screen (Before Joining a Room) -->
-    <div id="lobby">
-        <h2>Available Rooms</h2>
-        <ul id="roomList"></ul>
-
-        <button id="createRoom">Create Room</button>
-        <input type="text" id="roomIdInput" placeholder="Enter Room ID">
-        <button id="joinRoom">Join Room</button>
+    <div class="landing-container">
+        <div class="landing-content">
+            <h1 class="gradient-title">SyncBeats</h1>
+            <div class="button-group">
+                <button class="animated-btn blue" id="createMetronomeBtn">
+                    <span class="btn-text">&#43; Create Lobby</span>
+                    <span class="btn-text btn-text-hover">&#43; Create Lobby</span>
+                </button>
+                <input id="roomCodeInput" class="room-code-input" type="text" placeholder="Enter Room Code" maxlength="12" autocomplete="off" />
+                <button class="animated-btn purple" id="joinMetronomeBtn">
+                    <span class="btn-text">&#128101; Join Lobby</span>
+                    <span class="btn-text btn-text-hover">&#128101; Join Lobby</span>
+                </button>
+            </div>
+            <p class="subtitle">Sync your tempo. Anywhere.</p>
+        </div>
+        <div class="grid-overlay"></div>
     </div>
 
     <!-- 🔹 Metronome Screen (Hidden Until Joining a Room) -->
-    <div id="metronomeScreen" class="hidden">
-        <h2>Room: <span id="roomKey"></span></h2>
+    <div id="metronomeScreen" style="display:none">
+        <div class="metronome-content">
+            <h2>Room: <span id="roomKey"></span></h2>
 
-        <!-- Beat Visualizer -->
-        <div id="beatVisualizer"></div>
+            <!-- Beat Bar Visualizer -->
+            <div id="beatBar"></div>
 
-        <!-- Controls -->
-        <label>BPM: <input type="number" id="bpmInput" value="90"></label>
-        <label>Time Signature: 
-            <select id="timeSignature">
-                <option>4/4</option>
-                <option>3/4</option>
-                <option>6/8</option>
-            </select>
-        </label>
+            <!-- Beat Visualizer -->
+            <div id="beatVisualizer"></div>
 
-        <button id="startMetronome">▶ Play</button>
-        <button id="stopMetronome">⏹ Stop</button>
-        <button id="leaveRoom">🚪 Leave Room</button>
+            <!-- Controls -->
+            <label>BPM: <input type="number" id="bpmInput" value="90"></label>
+            <label>Time Signature: 
+                <select id="timeSignature">
+                    <option>4/4</option>
+                    <option>3/4</option>
+                    <option>6/8</option>
+                </select>
+            </label>
+
+            <button id="toggleMetronome">▶ Play</button>
+            <button id="leaveRoom">🚪 Leave Room</button>
+        </div>
     </div>
 
     <!-- JavaScript -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="js/script.js"></script>
 
 </body>
 </html>
