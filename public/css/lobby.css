@@ -1,33 +1,78 @@
-/* Prevent scrolling between sections */
+/* Remove duplicate and conflicting html, body rules */
 html, body {
-    overflow: hidden; /* Prevent scrolling down to metronome screen */
     height: 100%;
-    background-color: #121212; /* Dark Background */
-    color: white; /* Text Color */
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: linear-gradient(135deg, #101624 0%, #1a1333 100%);
+    color: #fff;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-/* Ensure full height for lobby screen */
+/* Remove/override old #lobby and #metronomeScreen rules */
 #lobby {
+    display: none !important;
+}
+#metronomeScreen {
+    display: none;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: linear-gradient(135deg, #101624 0%, #1a1333 100%);
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+}
+
+.metronome-content {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 2rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+}
+
+.landing-container {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-content {
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Remove/override generic button/input rules that conflict with modern design */
+button, input {
+    margin: 0;
+    box-sizing: border-box;
 }
 
 h1 {
     text-align: center;
     width: 100%;
-}
-
-/* Ensure metronome screen remains hidden until needed */
-#metronomeScreen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
 }
 
 /* Room List Styling */
@@ -73,4 +118,153 @@ input {
     border-radius: 5px;
     border: none;
     font-size: 16px;
+}
+
+.gradient-title {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #4f8cff 0%, #a259f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    margin-bottom: 2.5rem;
+    letter-spacing: -2px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    width: 100%;
+    max-width: 350px;
+    align-items: center;
+}
+
+.button-group .animated-btn,
+.button-group .room-code-input {
+    width: 100%;
+    max-width: 350px;
+    margin: 0;
+    box-sizing: border-box;
+    display: block;
+}
+
+.button-group .room-code-input {
+    margin-bottom: 0;
+}
+
+.animated-btn {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 64px;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 16px 0 rgba(80,80,120,0.10);
+    outline: none;
+    background: none;
+}
+
+.animated-btn.blue {
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+    color: #fff;
+}
+.animated-btn.purple {
+    background: linear-gradient(90deg, #a259f7 0%, #8b5cf6 100%);
+    color: #fff;
+}
+.animated-btn:hover {
+    box-shadow: 0 0 25px 0 rgba(59,130,246,0.25), 0 2px 16px 0 rgba(80,80,120,0.10);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.btn-text {
+    display: block;
+    position: absolute;
+    left: 0; right: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(.4,2,.6,1), opacity 0.3s;
+    font-size: 1.25rem;
+}
+.btn-text-hover {
+    transform: translateY(100%);
+    opacity: 0;
+}
+.animated-btn:hover .btn-text {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+.animated-btn:hover .btn-text-hover {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.subtitle {
+    color: #b3b3c6;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-top: 1.5rem;
+    letter-spacing: 0.01em;
+}
+
+/* Subtle grid overlay */
+.grid-overlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="40" height="40" fill="none"/><path d="M40 0H0V40" stroke="%23666A80" stroke-width="0.5" opacity="0.12"/></svg>');
+    background-size: 40px 40px;
+    opacity: 0.10;
+}
+
+@media (max-width: 600px) {
+    .landing-content {
+        max-width: 95vw;
+        padding: 1.5rem 0.5rem;
+    }
+    .gradient-title {
+        font-size: 2.1rem;
+    }
+    .animated-btn {
+        font-size: 1rem;
+        height: 52px;
+    }
+}
+
+.room-code-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    margin: 0 auto;
+    border-radius: 0.8rem;
+    border: none;
+    font-size: 1.15rem;
+    font-weight: 500;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 2px 16px 0 rgba(80,80,120,0.10);
+    margin-bottom: 1.5rem;
+    outline: none;
+    transition: box-shadow 0.2s, border 0.2s;
+    text-align: center;
+}
+.room-code-input:focus {
+    box-shadow: 0 0 0 2px #a259f7, 0 2px 16px 0 rgba(80,80,120,0.10);
+    border: 1.5px solid #a259f7;
+}
+
+.input-error {
+    border: 2px solid #e74c3c !important;
+    box-shadow: 0 0 0 2px #e74c3c !important;
 }
